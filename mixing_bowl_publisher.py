@@ -67,6 +67,11 @@ class CircleDetector:
         self.circle_start_time = None
         self.last_circle_duration = 0   # time (sec) for last completed circle
         self.last_circle_speed = 0      # average speed (degrees/sec) for last completed circle
+
+        # [NEW] 即時速度偵測
+        self.angle_history = []  # 儲存 (時間, 角度變化) 的歷史
+        self.history_window = 0.5  # 使用最近 0.5 秒的數據來計算速度
+        self.current_speed = 0  # 即時角速度 (degrees/sec)
         
     def get_angle(self, x, y):
         """Calculate angle from center (-180 to 180 degrees)"""
@@ -84,12 +89,14 @@ class CircleDetector:
     
     def update(self, x, y):
         """Update with new position and return if circle completed"""
+        current_time = time.time()
         angle, radius = self.get_angle(x, y)
         
         # Not moving enough to count
         if angle is None:
+            self.current_speed = 0 
             self.in_motion = False
-            return False, 0
+            return False, 0, "IDLE"
         
         self.in_motion = True
 
@@ -100,7 +107,7 @@ class CircleDetector:
         # First valid reading the angle
         if self.last_angle is None:
             self.last_angle = angle
-            return False, radius
+            return False, radius, "IDLE"
         
         # Calculate angle difference
         diff = angle - self.last_angle
@@ -110,10 +117,35 @@ class CircleDetector:
             diff -= 360
         elif diff < -180:
             diff += 360
+
+
+        # [NEW] 記錄角度變化到歷史
+        self.angle_history.append((current_time, diff))
+        
+        # [NEW] 清除太舊的數據（超過 history_window）
+        self.angle_history = [(t, d) for t, d in self.angle_history 
+                              if current_time - t <= self.history_window]
+        
+        # [NEW] 計算即時速度（最近時間窗口內的平均角速度）
+        if len(self.angle_history) >= 2:
+            total_angle = sum(d for _, d in self.angle_history)
+            time_span = current_time - self.angle_history[0][0]
+            if time_span > 0:
+                self.current_speed = abs(total_angle / time_span)  # degrees/sec
+
         
         # Accumulate the angle change
         self.accumulated_angle += diff
         self.last_angle = angle
+
+
+        # [NEW] 根據即時速度判斷狀態
+        if self.current_speed < 200:  # 調整這個閾值
+            speed_state = "SLOW"
+        else:
+            speed_state = "FAST"
+
+
         
         # Check if completed a full circle (360 degrees in either direction)
         circle_completed = False
@@ -135,7 +167,7 @@ class CircleDetector:
             # [New] reset circle timer
             self.circle_start_time = current_time
         
-        return circle_completed, radius
+        return circle_completed, radius, speed_state
 
 
 def get_mac_address():
@@ -331,6 +363,8 @@ def main():
     while True:
         try:
 
+            current_time = time.time()
+
             # Read joystick values
             x = myJoystick.horizontal
             y = myJoystick.vertical
@@ -343,16 +377,16 @@ def main():
             #? if the joystick makes a full circle, we will return hit
             
             # Update circle detector
-            hit, radius = detector.update(x, y)
+            hit, radius, speed_state = detector.update(x, y)
             # Calculate progress percentage (0-100%)
             progress = (abs(detector.accumulated_angle) / 360.0) * 100
             
             # Display status in terminal
-            current_time = time.time()
             if current_time - last_publish_time >= PUBLISH_INTERVAL:
-                # Show status
                 status = "STIRRING" if detector.in_motion else "IDLE"
-                print(f"{status} | X:{x:4d} Y:{y:4d} | Radius:{radius:5.0f} | Progress:{progress:5.1f}% | Circles:{detector.circles_completed}")
+                print(f"{status} [{speed_state}] | X:{x:4d} Y:{y:4d} | "
+                    f"Speed:{detector.current_speed:.1f}°/s | "
+                    f"Progress:{progress:5.1f}% | Circles:{detector.circles_completed}")
                 
                 # last_publish_time = current_time
             
@@ -362,7 +396,6 @@ def main():
 
             
             # Publish to MQTT at specified interval
-            current_time = time.time()
             if current_time - last_publish_time >= PUBLISH_INTERVAL:
                 # Re-create compact payload for MQTT (without indentation)
                 mqtt_payload = json.dumps({
@@ -372,14 +405,13 @@ def main():
                     'data': {
                         'x': x,
                         'y': y,
-                        # 'button': button
                     },
-                    # 'mixing': {
-                    #     'hit': hit,
-                    #     'circles': detector.circles_completed,
-                    #     'progress': round(progress, 1),
-                    #     'active': detector.in_motion
-                    # },
+                    'mixing': {
+                        'speed_state': speed_state,  # "IDLE", "SLOW", "MEDIUM", "FAST"
+                        'current_speed': round(detector.current_speed, 1),  # degrees/sec
+                        'circles': detector.circles_completed,
+                        'progress': round(progress, 1)
+                    },
                     'timestamp': int(current_time)
                 })
                 
