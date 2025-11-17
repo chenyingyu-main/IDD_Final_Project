@@ -365,7 +365,7 @@ def main():
     # Main loop
     while True:
         try:
-
+            #! Get current time (don't call multiple times!!!!)
             current_time = time.time()
 
             # Read joystick values
@@ -392,8 +392,11 @@ def main():
                     f"Progress:{progress:5.1f}% | Circles:{detector.circles_completed}")
                 
                 # last_publish_time = current_time
+                #! we will update last_publish_time after publishing to MQTT
             
             # time.sleep(0.05)  # 20Hz update rate
+            #! don't sleep here, we will control the publishing rate later
+
             #? end of detecting hit part
             #? ----------------------------------------------------
 
@@ -408,8 +411,8 @@ def main():
                     'data': {
                         'x': x,
                         'y': y,
-                        'speed': round(detector.current_speed, 1),  # 直接傳速度
-                        'radius': round(radius, 1),  # 可選：也可以傳距離
+                        'speed': round(detector.current_speed, 1),  # send the speed 
+                        'radius': round(radius, 1),  # optional: send radius
                     },
                     # 'mixing': {
                     #     'speed_state': speed_state,  # "IDLE", "SLOW", "MEDIUM", "FAST"
