@@ -385,7 +385,7 @@ def main():
             if current_time - last_publish_time >= PUBLISH_INTERVAL:
                 status = "STIRRING" if detector.in_motion else "IDLE"
                 print(f"{status} [{speed_state}] | X:{x:4d} Y:{y:4d} | "
-                    f"Speed:{detector.current_speed:.1f}°/s | "
+                    f"Speed:{detector.current_speed:.1f}degree/s | "
                     f"Progress:{progress:5.1f}% | Circles:{detector.circles_completed}")
                 
                 # last_publish_time = current_time
@@ -405,13 +405,15 @@ def main():
                     'data': {
                         'x': x,
                         'y': y,
+                        'speed': round(detector.current_speed, 1),  # 直接傳速度
+                        'radius': round(radius, 1),  # 可選：也可以傳距離
                     },
-                    'mixing': {
-                        'speed_state': speed_state,  # "IDLE", "SLOW", "MEDIUM", "FAST"
-                        'current_speed': round(detector.current_speed, 1),  # degrees/sec
-                        'circles': detector.circles_completed,
-                        'progress': round(progress, 1)
-                    },
+                    # 'mixing': {
+                    #     'speed_state': speed_state,  # "IDLE", "SLOW", "MEDIUM", "FAST"
+                    #     'current_speed': round(detector.current_speed, 1),  # degrees/sec
+                    #     'circles': detector.circles_completed,
+                    #     'progress': round(progress, 1)
+                    # },
                     'timestamp': int(current_time)
                 })
                 
