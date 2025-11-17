@@ -388,7 +388,7 @@ def main():
             if current_time - last_publish_time >= PUBLISH_INTERVAL:
                 status = "STIRRING" if detector.in_motion else "IDLE"
                 print(f"{status} [{speed_state}] | X:{x:4d} Y:{y:4d} | "
-                    f"Speed:{detector.current_speed:.1f}degree/s | "
+                    f"Speed:{detector.current_speed:.1f} degree/s | "
                     f"Progress:{progress:5.1f}% | Circles:{detector.circles_completed}")
                 
                 # last_publish_time = current_time
