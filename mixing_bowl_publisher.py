@@ -68,10 +68,10 @@ class CircleDetector:
         self.last_circle_duration = 0   # time (sec) for last completed circle
         self.last_circle_speed = 0      # average speed (degrees/sec) for last completed circle
 
-        # [NEW] 即時速度偵測
-        self.angle_history = []  # 儲存 (時間, 角度變化) 的歷史
-        self.history_window = 0.5  # 使用最近 0.5 秒的數據來計算速度
-        self.current_speed = 0  # 即時角速度 (degrees/sec)
+        # [NEW] real-time speed calculation
+        self.angle_history = []  # store the history of (time, angle change)
+        self.history_window = 0.5  # use 0.5 seconds window to calculate speed
+        self.current_speed = 0  # real-time angle speed (degrees/sec)
         
     def get_angle(self, x, y):
         """Calculate angle from center (-180 to 180 degrees)"""
@@ -93,6 +93,7 @@ class CircleDetector:
         angle, radius = self.get_angle(x, y)
         
         # Not moving enough to count
+        # don't forget to return to IDLE state
         if angle is None:
             self.current_speed = 0 
             self.in_motion = False
@@ -119,14 +120,14 @@ class CircleDetector:
             diff += 360
 
 
-        # [NEW] 記錄角度變化到歷史
+        # [NEW] record the angle change to history
         self.angle_history.append((current_time, diff))
         
-        # [NEW] 清除太舊的數據（超過 history_window）
+        # [NEW] clear old data (beyond history_window)
         self.angle_history = [(t, d) for t, d in self.angle_history 
                               if current_time - t <= self.history_window]
         
-        # [NEW] 計算即時速度（最近時間窗口內的平均角速度）
+        # [NEW] calculate real-time speed (average angular speed over recent time window)
         if len(self.angle_history) >= 2:
             total_angle = sum(d for _, d in self.angle_history)
             time_span = current_time - self.angle_history[0][0]
@@ -139,8 +140,10 @@ class CircleDetector:
         self.last_angle = angle
 
 
-        # [NEW] 根據即時速度判斷狀態
-        if self.current_speed < 200:  # 調整這個閾值
+        # [NEW] identify the speed state based on current speed
+        if self.current_speed < 200:  
+            # adjust threshold as needed 
+            # (but if we just want to send the speed, there's no necessity to classify)
             speed_state = "SLOW"
         else:
             speed_state = "FAST"
