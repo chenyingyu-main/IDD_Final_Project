@@ -39,13 +39,17 @@ def should_play(utensil, sensor_data, target, threshold):
         return False
 
     if utensil == 'pan':
-        # Pan uses rotation sensor
+        # Pan uses rotation sensor AND button must be held
+        button_held = sensor_data.get('button', False)
+        if not button_held:
+            return False  # Button must be held for condition to be met
+        
+        # Then check rotation threshold
         curr_val = sensor_data.get('rotation', 0)
         if target == "low":
             return curr_val < threshold
         elif target == "high":
             return curr_val > threshold
-        # Can add "medium" range if needed
         
     elif utensil == "cutting_board":
         # Cutting board uses button presses
