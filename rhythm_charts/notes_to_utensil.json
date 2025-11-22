@@ -1,0 +1,22 @@
+{
+    "Instrument 1" : {
+        "name": "pan",
+        "targets": {
+            "C4": "low",
+            "D4": "high",
+            "E4": "low"
+        }
+    },
+    "Instrument 2": {
+        "name": "cutting_board",
+        "targets" : {
+            "A3": "1",
+            "B3": "2",
+            "C4": "3"
+        }
+    },
+    "Instrument 3": {
+        "name": "mixing_bowl",
+        "targets" : {}
+    }
+}
