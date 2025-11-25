@@ -45,6 +45,7 @@ PUBLISH_INTERVAL = 0.1
 # Jittering thresholds
 DISTANCE_DEADZONE = 20
 ROTATION_DEADZONE = 0
+PRESS_THRESHOLD = 10000
 
 def get_mac_address():
     """Get the MAC address of the primary network interface"""
@@ -153,7 +154,7 @@ def has_changed(prev, current):
         return True
 
     # Distance jitter reduction
-    if abs(current["distance"] - prev["distance"]) > DISTANCE_DEADZONE:
+    if current["distance"] != prev["distance"]:
         return True
 
     # Button is binary, no jitter
@@ -251,12 +252,19 @@ def main():
     "distance": None,
     "rotation": None,
     "button": None
-}
+    }
+
+    distance_button_pressed = False
     # Main loop
     while True:
         try:
             # Read distance sensor
             proxValue = oProx.get_proximity()
+        
+            if proxValue < PRESS_THRESHOLD:
+                distance_button_pressed = True   # object removed → button pressed
+            else:
+                distance_button_pressed = False  # object present → button unpressed
 
             # Read rotary encoder
             # negate the position to make clockwise rotation positive
@@ -318,7 +326,7 @@ def main():
             
             # Publish to MQTT on changes
             current_data = {
-                "distance": proxValue,
+                "distance": distance_button_pressed,
                 "rotation": position,
                 "button": not button_held,
             }
