@@ -142,7 +142,16 @@ def _chart_loop(socketio):
     
     print("[COUNTDOWN] GO!")
     socketio.emit("countdown", {"count": "GO"})
-    time.sleep(2)
+    time.sleep(1)
+
+    if chart_data and "music_file" in chart_data:
+        socketio.emit("play_music", {
+            "music_file": chart_data["music_file"],
+            "start_time": time.time()
+        })
+        print(f"[MUSIC] Sent play command: {chart_data['music_file']}")
+
+    time.sleep(1)
 
     events = chart_data["events"]
     start_time = time.time() + chart_data["offset"]

@@ -547,7 +547,7 @@
           "pitch": "G",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 1.5
+          "duration": 1.0
         },
         {
           "midi": 53,
@@ -558,7 +558,7 @@
           "pitch": "F",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 1.5
+          "duration": 1.0
         },
         {
           "midi": 52,
@@ -569,7 +569,7 @@
           "pitch": "E",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 1.5
+          "duration": 1.0
         },
         {
           "midi": 55,
@@ -580,7 +580,7 @@
           "pitch": "G",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 1.5
+          "duration": 1.0
         },
         {
           "midi": 53,
@@ -591,7 +591,7 @@
           "pitch": "F",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 2
+          "duration": 1
         },
         {
           "midi": 52,
@@ -602,7 +602,7 @@
           "pitch": "E",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 1.5
+          "duration": 1.0
         },
         {
           "midi": 55,
@@ -613,7 +613,7 @@
           "pitch": "G",
           "octave": 3,
           "velocity": 0.8,
-          "duration": 4.0
+          "duration": 1.0
         }
       ],
       "controlChanges": {},

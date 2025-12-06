@@ -69,6 +69,7 @@ def handle_filter(data):
 def handle_restart_chart():
     """Restart the rhythm chart from the beginning."""
     print('[RESTART] Chart restart requested')
+    socketio.emit('chart_restarted')
     from chart_manager import restart_chart_playback
     restart_chart_playback(socketio, chart_data)
     emit('chart_restarted', broadcast=True)
@@ -88,8 +89,11 @@ if __name__ == '__main__':
     print("=" * 60)
 
     # Load rhythm chart
-    chart_data = parse_midi_to_rhythm(file_path="./rhythm_charts/modified_song.json")
+    MUSIC_FILE = "/static/music/Jingle Bells -Beena Version.ogg" 
+    chart_data = parse_midi_to_rhythm(file_path="./rhythm_charts/jingle_bells_game_beena.json")
     print(f"[CHART LOADED] {len(chart_data['events'])} events loaded")
+
+    chart_data['music_file'] = MUSIC_FILE
     
     # Start MQTT client
     from mqtt_handler import mqtt_client

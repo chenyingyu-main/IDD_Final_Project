@@ -937,6 +937,102 @@
     });
 
     // ============================================================================
+    // MUSIC SYSTEM
+    // ============================================================================
+    let bgMusic = null;
+
+    function initMusic() {
+        bgMusic = new Audio();
+        bgMusic.loop = false;
+        bgMusic.volume = 1.0;
+        
+        bgMusic.addEventListener('canplaythrough', () => {
+            console.log('[MUSIC] Ready to play');
+        });
+        
+        bgMusic.addEventListener('error', (e) => {
+            console.error('[MUSIC] Error loading music:', e);
+        });
+        
+        console.log('[MUSIC] Music system initialized');
+    }
+
+    // ============================================================================
+    // SOCKET EVENT: PLAY MUSIC
+    // ============================================================================
+    socket.on('play_music', (data) => {
+        console.log('[MUSIC] Received play command:', data);
+        
+        if (!bgMusic) {
+            initMusic();
+        }
+        
+        // 設定音樂檔案
+        bgMusic.src = data.music_file;
+        
+        // 播放音樂
+        bgMusic.play()
+            .then(() => {
+                console.log('[MUSIC] ✅ Playing:', data.music_file);
+            })
+            .catch((error) => {
+                console.error('[MUSIC] ❌ Play failed:', error);
+                
+                // 瀏覽器可能阻擋自動播放，顯示按鈕
+                const playBtn = document.createElement('button');
+                playBtn.textContent = '🎵 Click to Play Music';
+                playBtn.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 10000;
+                    padding: 20px 40px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 15px;
+                    cursor: pointer;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                `;
+                
+                playBtn.onclick = () => {
+                    bgMusic.play().then(() => {
+                        console.log('[MUSIC] ✅ Playing after user interaction');
+                        playBtn.remove();
+                    });
+                };
+                
+                document.body.appendChild(playBtn);
+            });
+    });
+
+    // ============================================================================
+    // SOCKET EVENT: CHART RESTARTED (修改現有的)
+    // ============================================================================
+    socket.on('chart_restarted', () => {
+        console.log('[RESTART] Chart has been restarted');
+        
+        // Reset frontend state
+        score = 0;
+        combo = 0;
+        updateScore();
+        
+        // Clear all active notes
+        activeNotes.forEach(note => note.remove());
+        activeNotes.clear();
+        
+        // ✅ 停止並重設音樂
+        if (bgMusic) {
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            console.log('[MUSIC] Stopped and reset');
+        }
+    });
+
+    // ============================================================================
     // NOTE CREATION & ANIMATION
     // ============================================================================
 
@@ -1135,6 +1231,7 @@
     // ============================================================================
 
     initializeAnimations();
+    initMusic();  
     console.log('Kitchen Rhythm Game loaded! 🎮');
 </script>
 </body>
