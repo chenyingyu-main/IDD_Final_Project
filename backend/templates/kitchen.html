@@ -806,7 +806,12 @@
 
     function formatTarget(utensil, target) {
         if (utensil === 'pan') {
-            if (target === 'high') return '⬆️';
+            if (target === 'high+on') return '🔥🍳';
+            if (target === 'high+off') return '🔥🚫';
+            if (target === 'low+on') return '🌡️🍳';
+            if (target === 'low+off') return '🌡️🚫';
+            // Legacy support
+            if (target === 'high') return '🔥';
             if (target === 'medium') return '🔥';
             if (target === 'low') return '🌡️';
             return target;

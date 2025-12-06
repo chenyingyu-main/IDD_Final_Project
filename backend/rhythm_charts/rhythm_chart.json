@@ -32,7 +32,7 @@
       "octave": 4,
       "velocity": 0.8,
       "duration": 1,
-      "target": "low"
+      "target": "high+off"
     },
     {
       "time": 5,
@@ -77,7 +77,7 @@
       "octave": 4,
       "velocity": 0.8,
       "duration": 1,
-      "target": "high"
+      "target": "high+off"
     },
     {
       "time": 12.5,
@@ -122,7 +122,7 @@
       "octave": 4,
       "velocity": 0.8,
       "duration": 1,
-      "target": "low"
+      "target": "high+off"
     },
     {
       "time": 22.5,

@@ -40,21 +40,25 @@ def should_play(utensil, sensor_data, target, threshold):
         return False
 
     if utensil == 'pan':
-        # Pan uses rotation sensor AND button must be held
+        # Pan uses rotation sensor AND button state (on/off)
         button_held = sensor_data.get('distance', False)
-        #if not button_held:
-        #    return False  # Button must be held for condition to be met
-        if "off" in target:
-            stove = (button_held == True)
+        
+        # Determine stove state based on target
+        if "off" in str(target):
+            stove_on = (button_held == False)  # OFF means button NOT held
+        elif "on" in str(target):
+            stove_on = (button_held == True)   # ON means button held
         else:
-            stove = (button_held == False)  
-                
+            stove_on = True  # Legacy: assume stove is on
+        
         # Then check rotation threshold
         curr_val = sensor_data.get('rotation', 0)
-        if "low" in target:
-            return stove and curr_val < threshold
-        else: 
-            return stove and curr_val > threshold
+        if "low" in str(target):
+            return stove_on and curr_val < threshold
+        elif "high" in str(target):
+            return stove_on and curr_val > threshold
+        
+        return False
 
         
         
