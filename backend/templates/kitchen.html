@@ -822,6 +822,8 @@
 
     socket.on('mqtt_message', (message) => {
         // Raw MQTT data - trigger animation on ANY player action
+        return;
+
         if (message.is_json) {
             const payload = JSON.parse(message.payload);
             
@@ -989,7 +991,7 @@
                 note.remove();
                 activeNotes.delete(note.dataset.noteId);
             }
-        }, (animationDuration + 1) * 500);
+        }, (animationDuration + 1) * 1000);
     }
 
     function formatTarget(utensil, target) {
