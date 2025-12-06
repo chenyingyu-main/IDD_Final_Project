@@ -676,7 +676,7 @@
         'pan': {
             idle: '/static/animation/pan_idle.png',
             frames: ['/static/animation/pan_hit_1.png', '/static/animation/pan_hit_2.png'],
-            fps: 5,
+            fps: 8,
             element: null,
             timerId: null,
             frameIndex: 0
@@ -692,12 +692,14 @@
         'mixing_bowl': {
             idle: '/static/animation/bowl_idle.png',
             frames: ['/static/animation/bowl_stir_1.png', '/static/animation/bowl_stir_2.png'],
-            fps: 8,
+            fps: 10,
             element: null,
             timerId: null,
             frameIndex: 0
         }
     };
+
+    
 
     // Initialize animation elements
     function initializeAnimations() {
@@ -741,7 +743,7 @@
 
     // Function to show hit animation (legacy name - now calls frame-based version)
     function showHitAnimation(utensil) {
-        playHitAnimationFrames(utensil, 1000);
+        playHitAnimationFrames(utensil, 500);
     }
 
     // ============================================================================
@@ -831,7 +833,7 @@
     const COOLDOWN_MS = {
         'pan': 100,
         'cutting_board': 100,
-        'mixing_bowl': 30   // Bowl 冷卻時間超短
+        'mixing_bowl': 10   // Bowl 冷卻時間超短
     };
 
     function canTriggerAnimation(utensil) {
@@ -844,6 +846,7 @@
         animationCooldowns[utensil] = now;
         return true;
     }
+
 
     // ============================================================================
     // MQTT MESSAGE HANDLER - WITH ANIMATION TRIGGERS
@@ -866,7 +869,7 @@
                 const data = payload.data || payload;
                 
                 if ((data.button === true || data.distance === true) && canTriggerAnimation('pan')) {
-                    playHitAnimationFrames('pan', 250);
+                    playHitAnimationFrames('pan', 500);
                 }
             }
             
@@ -879,7 +882,7 @@
                 const hasTouch = data['0'] === 1 || data['1'] === 1 || data['2'] === 1;
                 
                 if (hasTouch && canTriggerAnimation('cutting_board')) {
-                    playHitAnimationFrames('cutting_board', 150);
+                    playHitAnimationFrames('cutting_board', 500);
                 }
             }
             
@@ -891,7 +894,7 @@
                 const isStirring = (data.speed > 0) || (data.radius > 0);
                 
                 if (isStirring && canTriggerAnimation('mixing_bowl')) {
-                    playHitAnimationFrames('mixing_bowl', 600);
+                    playHitAnimationFrames('mixing_bowl', 1000);
                 }
             }
         }
