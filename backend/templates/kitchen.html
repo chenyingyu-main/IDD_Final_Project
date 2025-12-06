@@ -708,7 +708,7 @@
     }
 
     // Start frame-based animation that loops for a set duration then reverts to idle
-    function playHitAnimationFrames(utensil, durationMs = 1000) {
+    function playHitAnimationFrames(utensil, durationMs = 500) {
         const animData = animationMap[utensil];
         if (!animData || !animData.element) return;
 
@@ -819,10 +819,37 @@
         console.log('[NOTE RESULT]', result);
         handleNoteResult(result);
     });
+    // ============================================================================
+    // ANIMATION COOLDOWN SYSTEM
+    // ============================================================================
+    const animationCooldowns = {
+        pan: 0,
+        cutting_board: 0,
+        mixing_bowl: 0
+    };
 
+    const COOLDOWN_MS = {
+        'pan': 100,
+        'cutting_board': 100,
+        'mixing_bowl': 30   // Bowl 冷卻時間超短
+    };
+
+    function canTriggerAnimation(utensil) {
+        const now = Date.now();
+        const cooldown = COOLDOWN_MS[utensil] || 100;
+        
+        if (now - animationCooldowns[utensil] < cooldown) {
+            return false;
+        }
+        animationCooldowns[utensil] = now;
+        return true;
+    }
+
+    // ============================================================================
+    // MQTT MESSAGE HANDLER - WITH ANIMATION TRIGGERS
+    // ============================================================================
     socket.on('mqtt_message', (message) => {
         // Raw MQTT data - trigger animation on ANY player action
-        return;
 
         if (message.is_json) {
             const payload = JSON.parse(message.payload);
@@ -836,11 +863,10 @@
             // 🍳 PAN 
             // ============================================
             if (utensil === 'pan') {
-                const data = payload.data || {};
+                const data = payload.data || payload;
                 
-                if (data.button === true || data.distance === true) {
-                    console.log('[ANIMATION] Pan action detected!');
-                    showHitAnimation('pan');
+                if ((data.button === true || data.distance === true) && canTriggerAnimation('pan')) {
+                    playHitAnimationFrames('pan', 250);
                 }
             }
             
@@ -848,13 +874,12 @@
             // 🔪 KNIFE 
             // ============================================
             else if (utensil === 'cutting_board') {
-                const data = payload.data || {};
+                const data = payload.data || payload;
                 
                 const hasTouch = data['0'] === 1 || data['1'] === 1 || data['2'] === 1;
                 
-                if (hasTouch) {
-                    console.log('[ANIMATION] Knife action detected!');
-                    showHitAnimation('cutting_board');
+                if (hasTouch && canTriggerAnimation('cutting_board')) {
+                    playHitAnimationFrames('cutting_board', 150);
                 }
             }
             
@@ -862,14 +887,11 @@
             // 🥣 BOWL 
             // ============================================
             else if (utensil === 'mixing_bowl') {
-                const data = payload.data || {};
-                const isStirring = (data.speed > 0);
-                
-                console.log('[BOWL] Speed:', data.speed, 'Radius:', data.radius, 'Stirring:', isStirring);
+                const data = payload.data || payload;
+                const isStirring = (data.speed > 0) || (data.radius > 0);
                 
                 if (isStirring && canTriggerAnimation('mixing_bowl')) {
-                    console.log('[BOWL] ✅ Animation triggered!');
-                    playHitAnimationFrames('mixing_bowl', 800);
+                    playHitAnimationFrames('mixing_bowl', 600);
                 }
             }
         }
