@@ -342,8 +342,11 @@
             height: calc(100vh - 500px);
             background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.3) 100%);
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding: 2rem;
         }
 
         #placeholder-text {
@@ -351,6 +354,57 @@
             color: rgba(0,0,0,0.2);
             text-align: center;
             font-weight: 600;
+            width: 100%;
+        }
+
+        /* Animation Container */
+        #animation-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 0;
+            width: 90%;
+            margin-left: 0;
+            flex-wrap: nowrap;
+        }
+
+        .animation-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .animation-item-label {
+            display: none;
+        }
+
+        .animation-image {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            transition: transform 0.3s ease;
+        }
+
+        .animation-image:hover {
+            transform: scale(1.05);
+            box-shadow: none;
+        }
+
+        .animation-image.hit {
+            animation: hitPulse 0.5s ease-out;
+        }
+
+        @keyframes hitPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
         /* Debug info */
@@ -586,6 +640,20 @@
         <div id="placeholder-text">
             🎮 Get ready to cook! 🎮
         </div>
+        <div id="animation-container">
+            <div class="animation-item">
+                <div class="animation-item-label">🍳 PAN</div>
+                <img id="pan-animation" class="animation-image" src="/static/animation/pan_idle.png" alt="Pan animation">
+            </div>
+            <div class="animation-item">
+                <div class="animation-item-label">🔪 KNIFE</div>
+                <img id="knife-animation" class="animation-image" src="/static/animation/knife_idle.png" alt="Knife animation">
+            </div>
+            <div class="animation-item">
+                <div class="animation-item-label">🥣 BOWL</div>
+                <img id="bowl-animation" class="animation-image" src="/static/animation/bowl_idle.png" alt="Bowl animation">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -600,6 +668,81 @@
     let activeNotes = new Map(); // Map of note ID -> note element
 
     const LEAD_TIME = 3; // seconds (must match backend)
+
+    // ============================================================================
+    // ANIMATION MAPPING (frame-based)
+    // ============================================================================
+    const animationMap = {
+        'pan': {
+            idle: '/static/animation/pan_idle.png',
+            frames: ['/static/animation/pan_hit_1.png', '/static/animation/pan_hit_2.png'],
+            fps: 5,
+            element: null,
+            timerId: null,
+            frameIndex: 0
+        },
+        'cutting_board': {
+            idle: '/static/animation/knife_idle.png',
+            frames: ['/static/animation/knife_hit_1.png', '/static/animation/knife_hit_2.png'],
+            fps: 8,
+            element: null,
+            timerId: null,
+            frameIndex: 0
+        },
+        'mixing_bowl': {
+            idle: '/static/animation/bowl_idle.png',
+            frames: ['/static/animation/bowl_stir_1.png', '/static/animation/bowl_stir_2.png'],
+            fps: 8,
+            element: null,
+            timerId: null,
+            frameIndex: 0
+        }
+    };
+
+    // Initialize animation elements
+    function initializeAnimations() {
+        animationMap['pan'].element = document.getElementById('pan-animation');
+        animationMap['cutting_board'].element = document.getElementById('knife-animation');
+        animationMap['mixing_bowl'].element = document.getElementById('bowl-animation');
+        console.log('[ANIMATION] Initialized animation elements');
+    }
+
+    // Start frame-based animation that loops for a set duration then reverts to idle
+    function playHitAnimationFrames(utensil, durationMs = 1000) {
+        const animData = animationMap[utensil];
+        if (!animData || !animData.element) return;
+
+        // Clear any existing timer
+        if (animData.timerId) {
+            clearInterval(animData.timerId);
+            animData.timerId = null;
+        }
+
+        animData.frameIndex = 0;
+        const interval = 1000 / (animData.fps || 10);
+
+        // Start looping frames
+        animData.timerId = setInterval(() => {
+            const frame = animData.frames[animData.frameIndex % animData.frames.length];
+            animData.element.src = frame;
+            animData.frameIndex += 1;
+        }, interval);
+
+        // Stop after duration and revert to idle
+        setTimeout(() => {
+            if (animData.timerId) {
+                clearInterval(animData.timerId);
+                animData.timerId = null;
+            }
+            animData.frameIndex = 0;
+            animData.element.src = animData.idle;
+        }, durationMs);
+    }
+
+    // Function to show hit animation (legacy name - now calls frame-based version)
+    function showHitAnimation(utensil) {
+        playHitAnimationFrames(utensil, 1000);
+    }
 
     // ============================================================================
     // INSTRUCTIONS MODAL
@@ -835,10 +978,12 @@
             score += 100;
             combo++;
             showFeedback(utensil, resultType, accuracy_ms);
+            showHitAnimation(utensil);
         } else if (resultType === 'hold_complete') {
             score += 300; // Bonus for completing hold
             combo++;
             showFeedback(utensil, resultType);
+            showHitAnimation(utensil);
         } else if (resultType === 'hold_break') {
             score += Math.floor(completion_percent); // Partial credit
             combo = 0;
@@ -912,10 +1057,12 @@
         console.error('[ERROR] Restart button not found!');
     }
 
+
     // ============================================================================
     // INITIALIZATION
     // ============================================================================
 
+    initializeAnimations();
     console.log('Kitchen Rhythm Game loaded! 🎮');
 </script>
 </body>
