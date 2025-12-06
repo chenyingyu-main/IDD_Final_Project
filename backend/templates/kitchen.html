@@ -821,10 +821,55 @@
     });
 
     socket.on('mqtt_message', (message) => {
-        // Raw MQTT data (for debugging)
+        // Raw MQTT data - trigger animation on ANY player action
         if (message.is_json) {
             const payload = JSON.parse(message.payload);
-            // You can add sensor data visualization here if needed
+            
+            // Detect utensil type
+            const utensil = payload.utensil;
+            
+            if (!utensil) return;
+            
+            // ============================================
+            // 🍳 PAN 
+            // ============================================
+            if (utensil === 'pan') {
+                const data = payload.data || {};
+                
+                if (data.button === true || data.distance === true) {
+                    console.log('[ANIMATION] Pan action detected!');
+                    showHitAnimation('pan');
+                }
+            }
+            
+            // ============================================
+            // 🔪 KNIFE 
+            // ============================================
+            else if (utensil === 'cutting_board') {
+                const data = payload.data || {};
+                
+                const hasTouch = data['0'] === 1 || data['1'] === 1 || data['2'] === 1;
+                
+                if (hasTouch) {
+                    console.log('[ANIMATION] Knife action detected!');
+                    showHitAnimation('cutting_board');
+                }
+            }
+            
+            // ============================================
+            // 🥣 BOWL 
+            // ============================================
+            else if (utensil === 'mixing_bowl') {
+                const data = payload.data || {};
+                const isStirring = (data.speed > 0);
+                
+                console.log('[BOWL] Speed:', data.speed, 'Radius:', data.radius, 'Stirring:', isStirring);
+                
+                if (isStirring && canTriggerAnimation('mixing_bowl')) {
+                    console.log('[BOWL] ✅ Animation triggered!');
+                    playHitAnimationFrames('mixing_bowl', 800);
+                }
+            }
         }
     });
 
@@ -944,7 +989,7 @@
                 note.remove();
                 activeNotes.delete(note.dataset.noteId);
             }
-        }, (animationDuration + 1) * 1000);
+        }, (animationDuration + 1) * 500);
     }
 
     function formatTarget(utensil, target) {
