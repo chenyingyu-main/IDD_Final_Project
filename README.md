@@ -37,15 +37,16 @@ Currently, for each track, we support the following action -> sound mapping (in 
 
 ## TO DO LIST:
 
-- add more notes for mixing bowl
-- change pan notes
-- change pan flip to a separte note
-- get rid of ready to cook words on ui
-- Add logo to UI
-- change timing so that perfect lines up
-- Update Instructions
+- add more notes for mixing bowl (ellen) 
+- change pan notes (amanda)
+- change pan flip to a separate note (amanda)
+- get rid of ready to cook words on ui (miriam)
+- Add logo to UI (miriam)
+- add sound effects (miriam)
+- change timing so that perfect lines up (shreya)
+- Update Instructions (shreya)
 - Record
-- Make mixing bowl 
+- Make mixing bowl (ellen)
 
 - make it fun to play
 
