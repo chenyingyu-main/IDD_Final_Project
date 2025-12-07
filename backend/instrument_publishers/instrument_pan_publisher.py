@@ -268,7 +268,7 @@ def main():
 
             # Read rotary encoder
             # negate the position to make clockwise rotation positive
-            position = encoder.position
+            position = encoder.position % 20
             button_pressed = not ss.digital_read(24)
 
             if position != last_position:
