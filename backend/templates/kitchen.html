@@ -1145,10 +1145,12 @@
             if (target === '1') return '🧅';  // Red Onion
             if (target === '2') return '🥕';  // Carrot
             return '⬆️';
-        } else if (utensil === 'mixing_bowl') 
-        {
-            if (target === 'low') return '↻';
-            if (target === 'high') return '↺';
+        } else if (utensil === 'mixing_bowl') {
+            if (target === 'up') return '⬆️';
+            if (target === 'down') return '⬇️';
+            if (target === 'left') return '⬅️';
+            if (target === 'right') return '➡️';
+            
             return target;
         }
 

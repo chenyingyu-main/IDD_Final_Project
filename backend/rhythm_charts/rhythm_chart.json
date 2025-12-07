@@ -62,7 +62,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "low"
+      "target": "up"
     },
     {
       "time": 7.738,
@@ -152,7 +152,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "high"
+      "target": "left"
     },
     {
       "time": 12.118,
@@ -242,7 +242,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "low"
+      "target": "right"
     },
     {
       "time": 16.498,
@@ -332,7 +332,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "low"
+      "target": "up"
     },
     {
       "time": 20.878,
@@ -422,7 +422,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "low"
+      "target": "right"
     },
     {
       "time": 25.258,
@@ -527,7 +527,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1,
-      "target": "high"
+      "target": "left"
     },
     {
       "time": 29.638,
@@ -677,7 +677,7 @@
       "octave": 3,
       "velocity": 0.8,
       "duration": 1.0,
-      "target": "low"
+      "target": "up"
     },
     {
       "time": 36.208,

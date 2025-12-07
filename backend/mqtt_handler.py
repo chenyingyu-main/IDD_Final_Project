@@ -120,7 +120,7 @@ def on_message(client, userdata, msg):
             # Debug: show direction and position
             if direction:
                 side = "LEFT" if x < CENTER_X else "RIGHT"
-                print(f"[MIXING BOWL] Direction: {direction}, side: {side}, x={x}")
+                # print(f"[MIXING BOWL] Direction: {direction}, side: {side}, x={x}")
         
         # ====================================================================
         # SOUND PLAYBACK: Check if sensor data triggers sound for this utensil
