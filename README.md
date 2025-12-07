@@ -37,11 +37,17 @@ Currently, for each track, we support the following action -> sound mapping (in 
 
 ## TO DO LIST:
 
-- make it fun to play
+- add more notes for mixing bowl
+- change pan notes
+- change pan flip to a separte note
+- get rid of ready to cook words on ui
+- Add logo to UI
+- change timing so that perfect lines up
+- Update Instructions
+- Record
+- Make mixing bowl 
 
-- add knob to stove that indicates higher/lower and also restricts the movement past a specific rotation
-- hinge to restrict pan from moving upwards
-- make the knifeboard stronger
+- make it fun to play
 
 - sound design
 - frontend: show instruments movement with real actions - animation
@@ -53,3 +59,6 @@ Currently, for each track, we support the following action -> sound mapping (in 
 ## DONE
 - restart button on the screen
 - 3-2-1 countdown
+- add knob to stove that indicates higher/lower and also restricts the movement past a specific rotation
+- hinge to restrict pan from moving upwards
+- make the knifeboard stronger
