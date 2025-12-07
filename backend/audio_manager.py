@@ -68,11 +68,19 @@ def should_play(utensil, sensor_data, target, threshold):
         return sensor_data.get(button_id, 0) == 1
     
     elif utensil == "mixing_bowl":
-        curr_val = sensor_data.get('speed', 0)
-        if target == "low":
-            return sensor_data.get('speed', 0) < 400
+        # Mixing bowl uses rotation direction (clockwise vs counterclockwise)
+        # Direction is determined by tracking angle changes
+        direction = sensor_data.get('direction', None)
+        
+        if target == "clockwise":
+            return direction == "clockwise"
+        elif target == "counterclockwise":
+            return direction == "counterclockwise"
+        # Legacy support for high/low
         elif target == "high":
-            return sensor_data.get('speed', 0) > 400
+            return direction == "clockwise"
+        elif target == "low":
+            return direction == "counterclockwise"
     
     return False
 

@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 from datetime import datetime
 import json
 import threading
+import math
 
 from config import (MQTT_BROKER, MQTT_PORT, MQTT_TOPIC, 
                     MQTT_USERNAME, MQTT_PASSWORD, SOUND_RULES)
@@ -19,6 +20,39 @@ from game_logic import check_note_hits, sound_rules_lock
 mqtt_client = None
 _socketio = None
 _recent_messages = None
+
+# ============================================================================
+# MIXING BOWL DIRECTION TRACKING
+# ============================================================================
+
+# Track last position for direction detection
+mixing_bowl_state = {
+    'direction': None  # Current direction based on x position
+}
+
+CENTER_X = 519
+CENTER_Y = 517
+
+def detect_mixing_direction(x, y):
+    """
+    Detect direction based on x position.
+    Left half = counterclockwise, Right half = clockwise
+    Returns: 'clockwise', 'counterclockwise', or None
+    """
+    global mixing_bowl_state
+    
+    # Determine direction based on which side of center
+    if x < CENTER_X:
+        # Left half = counterclockwise
+        mixing_bowl_state['direction'] = 'counterclockwise'
+        return 'counterclockwise'
+    elif x > CENTER_X:
+        # Right half = clockwise
+        mixing_bowl_state['direction'] = 'clockwise'
+        return 'clockwise'
+    else:
+        # Exactly at center
+        return mixing_bowl_state['direction']  # Keep last direction
 
 
 def broadcast_to_web_client(message, topic):
@@ -74,6 +108,19 @@ def on_message(client, userdata, msg):
         # Extract utensil and sensor data
         utensil = payload.get('utensil', 'unknown')
         sensor_data = payload.get('data', {})
+        
+        # ====================================================================
+        # MIXING BOWL: Detect rotation direction from x, y coordinates
+        # ====================================================================
+        if utensil == 'mixing_bowl':
+            x = sensor_data.get('x', CENTER_X)
+            y = sensor_data.get('y', CENTER_Y)
+            direction = detect_mixing_direction(x, y)
+            sensor_data['direction'] = direction
+            # Debug: show direction and position
+            if direction:
+                side = "LEFT" if x < CENTER_X else "RIGHT"
+                print(f"[MIXING BOWL] Direction: {direction}, side: {side}, x={x}")
         
         # ====================================================================
         # SOUND PLAYBACK: Check if sensor data triggers sound for this utensil

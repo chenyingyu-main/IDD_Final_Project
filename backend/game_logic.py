@@ -82,7 +82,12 @@ def check_note_hits(utensil, sensor_data, socketio):
                         "scheduled": note["hit_time"],
                         "accuracy_ms": int(dt * 1000)
                     })
-                    print(f"[TAP HIT] {utensil} accuracy {int(dt*1000)}ms")
+                    # Debug: show what direction triggered the hit
+                    if utensil == "mixing_bowl":
+                        direction = sensor_data.get('direction', 'None')
+                        print(f"[TAP HIT] {utensil} target={note['target']} detected_direction={direction} accuracy {int(dt*1000)}ms")
+                    else:
+                        print(f"[TAP HIT] {utensil} accuracy {int(dt*1000)}ms")
 
         # ==============================================================
         # HOLD NOTE LOGIC (duration > 0)
