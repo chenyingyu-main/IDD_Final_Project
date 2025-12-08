@@ -247,6 +247,38 @@
             font-weight: 700;
         }
 
+        /* Fire overlay for pan heat levels */
+        .fire-overlay {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .fire-overlay .fire-emoji {
+            position: relative;
+            font-size: inherit;
+        }
+
+        .fire-overlay .heat-text {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 
+                -5px -5px 0 #000,
+                5px -5px 0 #000,
+                -5px 5px 0 #000,
+                5px 5px 0 #000,
+                0 0 10px #000;
+            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         /* HOLD Note - Elongated pill with stripes */
         .note.hold {
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
@@ -1361,17 +1393,16 @@
        
 
         if (utensil === 'pan'){
-            if (event.target === 'low') {
-                note.style.fontSize = '1.5rem';
-                note.style.color
-            }
-            else if (event.target === 'med') {
-                note.style.fontSize = '2.5rem';
-            }
-            else if (event.target === 'high') {
-                note.style.fontSize = '4rem';
-            }   
-        }
+             if (event.target === 'low') {
+                 note.style.fontSize = '4rem';
+             }
+             else if (event.target === 'med') {
+                 note.style.fontSize = '4rem';
+             }
+             else if (event.target === 'high') {
+                 note.style.fontSize = '4rem';
+             }   
+         }
         
         if (event.is_hold) {
             const content = document.createElement('div');
@@ -1384,7 +1415,7 @@
             const widthPerSecond = 30;
             note.style.minWidth = `${baseWidth + (event.duration * widthPerSecond)}px`;
         } else {
-            note.textContent = noteText;
+            note.innerHTML = noteText;
         }
 
         // Add to track
@@ -1420,9 +1451,9 @@
             // if (target === 'high+off') return '🔥🚫';
             // if (target === 'low+on') return '🌡️🍳';
             // if (target === 'low+off') return '🌡️🚫';
-            if (target === 'high') return '🔥';
-            if (target === 'med') return '🔥';
-            if (target === 'low') return '🔥';
+            if (target === 'high') return '<div class="fire-overlay"><span class="fire-emoji">🔥</span><span class="heat-text">H</span></div>';
+            if (target === 'med') return '<div class="fire-overlay"><span class="fire-emoji">🔥</span><span class="heat-text">M</span></div>';
+            if (target === 'low') return '<div class="fire-overlay"><span class="fire-emoji">🔥</span><span class="heat-text">L</span></div>';
             if (target === 'flip') return '🍳';
             return target;
         } else if (utensil === 'cutting_board') {
