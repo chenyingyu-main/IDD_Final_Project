@@ -236,3 +236,10 @@ def _chart_loop(socketio):
 
     chart_playing = False
     print("[CHART] Playback finished")
+    
+    # Emit game over event to frontend
+    socketio.emit("game_over", {
+        "message": "Song completed!",
+        "timestamp": time.time()
+    })
+    print("[CHART] Game over event sent to frontend")
