@@ -539,10 +539,10 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 3rem;
             border-radius: 25px;
-            max-width: 700px;
+            max-width: 900px;
+            width: 90%;
             box-shadow: 0 15px 50px rgba(0,0,0,0.5);
             border: 5px solid white;
-            text-align: center;
             animation: slideDown 0.5s ease-out;
         }
 
@@ -557,19 +557,78 @@
             }
         }
 
-        .game-over-content h2 {
-            color: white;
-            font-size: 4rem;
+        .game-over-header {
+            text-align: center;
             margin-bottom: 2rem;
+        }
+
+        .game-over-header h2 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
             text-shadow: 0 4px 8px rgba(0,0,0,0.3);
             font-weight: 700;
         }
 
+        .song-title {
+            color: #fdcb6e;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-over-body {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-over-left {
+            flex: 0 0 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .grade-display {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .grade-letter {
+            font-size: 6rem;
+            font-weight: 700;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin: 0;
+        }
+
+        .grade-letter.S { color: #ffd700; }
+        .grade-letter.A { color: #00b894; }
+        .grade-letter.B { color: #0984e3; }
+        .grade-letter.C { color: #fdcb6e; }
+        .grade-letter.D { color: #e17055; }
+        .grade-letter.F { color: #d63031; }
+
+        .grade-image {
+            width: 100%;
+        }
+
+        .grade-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .game-over-stats {
+            flex: 1;
             background: rgba(255, 255, 255, 0.95);
             padding: 2rem;
             border-radius: 15px;
-            margin-bottom: 2rem;
         }
 
         .stat-row {
@@ -712,23 +771,44 @@
     <!-- Game Over Modal -->
     <div id="game-over-modal">
         <div class="game-over-content">
-            <h2>🎉 Game Over! 🎉</h2>
-            <div class="game-over-stats">
-                <div class="stat-row">
-                    <span class="stat-label">Final Score:</span>
-                    <span class="stat-value final-score" id="final-score">0</span>
+            <div class="game-over-header">
+                <h2>🎉 Game Over! 🎉</h2>
+                <div class="song-title" id="song-title">Jingle Bells</div>
+            </div>
+            <div class="game-over-body">
+                <div class="game-over-left">
+                    <div class="grade-display">
+                        <div class="grade-letter" id="grade-letter">A</div>
+                    </div>
+                    <div class="grade-image">
+                        <img id="grade-image" src="" alt="Grade Image">
+                    </div>
                 </div>
-                <div class="stat-row">
-                    <span class="stat-label">Max Combo:</span>
-                    <span class="stat-value" id="max-combo">0x</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Notes Hit:</span>
-                    <span class="stat-value" id="notes-hit">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Accuracy:</span>
-                    <span class="stat-value" id="accuracy">0%</span>
+                <div class="game-over-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Final Score:</span>
+                        <span class="stat-value final-score" id="final-score">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Max Combo:</span>
+                        <span class="stat-value" id="max-combo">0x</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Accuracy:</span>
+                        <span class="stat-value" id="accuracy">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"># Perfects:</span>
+                        <span class="stat-value" id="perfect-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"># Good:</span>
+                        <span class="stat-value" id="good-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"># Misses:</span>
+                        <span class="stat-value" id="miss-count">0</span>
+                    </div>
                 </div>
             </div>
             <div class="game-over-buttons">
@@ -851,6 +931,9 @@
     let maxCombo = 0;
     let notesHit = 0;
     let totalNotes = 0;
+    let perfectHits = 0;
+    let goodHits = 0;
+    let missCount = 0;
     let activeNotes = new Map(); // Map of note ID -> note element
 
     const LEAD_TIME = 3; // seconds (must match backend)
@@ -1092,6 +1175,12 @@
         // Reset frontend state
         score = 0;
         combo = 0;
+        maxCombo = 0;
+        notesHit = 0;
+        totalNotes = 0;
+        perfectHits = 0;
+        goodHits = 0;
+        missCount = 0;
         updateScore();
         // Clear all active notes
         activeNotes.forEach(note => note.remove());
@@ -1208,6 +1297,9 @@
         maxCombo = 0;
         notesHit = 0;
         totalNotes = 0;
+        perfectHits = 0;
+        goodHits = 0;
+        missCount = 0;
         updateScore();
         
         // Clear all active notes
@@ -1362,6 +1454,12 @@
             combo++;
             maxCombo = Math.max(maxCombo, combo);
             notesHit++;
+            // Track perfect vs good hits
+            if (accuracy_ms !== null && Math.abs(accuracy_ms) < 50) {
+                perfectHits++;
+            } else {
+                goodHits++;
+            }
             showFeedback(utensil, resultType, accuracy_ms);
             showHitAnimation(utensil);
         } else if (resultType === 'hold_complete') {
@@ -1377,6 +1475,7 @@
             showFeedback(utensil, resultType, null, completion_percent);
         } else if (resultType === 'miss') {
             combo = 0;
+            missCount++;
             showFeedback(utensil, resultType);
         }
 
@@ -1461,13 +1560,36 @@
         // Update stats
         document.getElementById('final-score').textContent = score;
         document.getElementById('max-combo').textContent = maxCombo + 'x';
-        document.getElementById('notes-hit').textContent = `${notesHit} / ${totalNotes}`;
         document.getElementById('accuracy').textContent = accuracy + '%';
+        document.getElementById('perfect-count').textContent = perfectHits;
+        document.getElementById('good-count').textContent = goodHits;
+        document.getElementById('miss-count').textContent = missCount;
+        
+        // Calculate grade based on accuracy
+        let grade = 'F';
+        if (accuracy >= 95) grade = 'S';
+        else if (accuracy >= 90) grade = 'A';
+        else if (accuracy >= 80) grade = 'B';
+        else if (accuracy >= 70) grade = 'C';
+        else if (accuracy >= 60) grade = 'D';
+        
+        // Update grade display
+        const gradeElement = document.getElementById('grade-letter');
+        gradeElement.textContent = grade;
+        gradeElement.className = 'grade-letter ' + grade;
+        
+        // Update grade image based on grade
+        const gradeImage = document.getElementById('grade-image');
+        if (grade === 'D' || grade === 'F') {
+            gradeImage.src = '/static/end_screen/Breath_of_the_Wild_Failed_Food_Dish_Dubious_Food_29.webp';
+        } else {
+            gradeImage.src = '/static/end_screen/1748978912018m_1000x1000.webp';
+        }
         
         // Show modal
         modal.classList.add('active');
         
-        console.log('[GAME OVER] Modal displayed - Score:', score, 'Accuracy:', accuracy + '%');
+        console.log('[GAME OVER] Modal displayed - Score:', score, 'Accuracy:', accuracy + '%', 'Grade:', grade);
     }
 
     // Play Again button
