@@ -1,5 +1,9 @@
 # IDD_Final_Project
 
+- **Original Repo:** https://github.com/amandazlu/IDD_Final_Project/wiki
+- **Wiki (Final Project Document):** https://github.com/amandazlu/IDD_Final_Project/wiki
+
+
 ## Set-up 
 
 One pi must host. The other Pis can act as instruments.
