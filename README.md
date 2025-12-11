@@ -63,7 +63,6 @@ Currently, for each track, we support the following action -> sound mapping (in 
 
 - start our report
 
--->
 
 ## DONE
 - restart button on the screen
@@ -71,3 +70,5 @@ Currently, for each track, we support the following action -> sound mapping (in 
 - add knob to stove that indicates higher/lower and also restricts the movement past a specific rotation
 - hinge to restrict pan from moving upwards
 - make the knifeboard stronger
+
+-->
