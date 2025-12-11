@@ -5,7 +5,7 @@
 - **Original Repo:** https://github.com/amandazlu/IDD_Final_Project
 - **Wiki (Final Project Document):** https://github.com/amandazlu/IDD_Final_Project/wiki
 
-
+<!--
 ## Set-up 
 
 One pi must host. The other Pis can act as instruments.
@@ -62,6 +62,8 @@ Currently, for each track, we support the following action -> sound mapping (in 
 - instructions modal on the screen and help button
 
 - start our report
+
+-->
 
 ## DONE
 - restart button on the screen
