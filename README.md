@@ -5,6 +5,9 @@
 - **Original Repo:** https://github.com/amandazlu/IDD_Final_Project
 - **Wiki (Final Project Document):** https://github.com/amandazlu/IDD_Final_Project/wiki
 
+⚠️ **Wiki Notice**: Currently using the [Amanda's wiki](https://github.com/amandazlu/IDD_Final_Project/wiki) as documentation. Wiki migration to this fork is in progress.
+
+
 <!--
 ## Set-up 
 
