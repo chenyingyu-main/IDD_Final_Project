@@ -2,7 +2,7 @@
 
 **Collaborators: Amanda Lu, Miriam Alex, Shreya Kethi Reddy, Ying Yu Chen**
 
-- **Original Repo:** https://github.com/amandazlu/IDD_Final_Project/wiki
+- **Original Repo:** https://github.com/amandazlu/IDD_Final_Project
 - **Wiki (Final Project Document):** https://github.com/amandazlu/IDD_Final_Project/wiki
 
 
